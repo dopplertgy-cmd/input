@@ -1,299 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ProBank — Secure Login</title>
-  <meta name="color-scheme" content="light dark" />
-  <meta name="description" content="Sample professional bank login page (demo)." />
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bank Login</title>
   <style>
-    :root {
-      --bg: #0b1020;
-      --bg-2: #0e1530;
-      --card: #ffffff;
-      --ink: #0f172a;
-      --muted: #5b647a;
-      --primary: #0d6efd;
-      --primary-ink: #ffffff;
-      --ring: #80b3ff;
-      --success: #198754;
-      --danger: #dc3545;
-      --warning: #f59e0b;
-      --shadow: 0 10px 25px rgba(2,12,27,.25);
-    }
-    @media (prefers-color-scheme: dark) {
-      :root{ --card:#101827; --ink:#e5eefb; --muted:#9fb0cc; --bg:#050913; --bg-2:#090f22; --shadow: 0 10px 25px rgba(0,0,0,.5);} 
-    }
-
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
     body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       margin: 0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      color: var(--ink);
-      background: radial-gradient(1200px 600px at 15% 0%, rgba(13,110,253,.25), transparent 60%),
-                  radial-gradient(1000px 500px at 100% 100%, rgba(56,189,248,.15), transparent 60%),
-                  linear-gradient(180deg, var(--bg), var(--bg-2));
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      min-height: 100dvh;
     }
-
-    header, footer { display: flex; align-items: center; justify-content: center; padding: 1rem; }
-    header .wrap, footer .wrap { width: min(1100px, 92%); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-
-    .brand { display: inline-flex; align-items: center; gap: .75rem; color: #fff; text-decoration: none; }
-    .brand svg { width: 36px; height: 36px; }
-    .brand b { font-weight: 700; letter-spacing: .2px; font-size: 1.05rem; }
-
-    main { display: grid; place-items: center; padding: 3rem 1rem; }
-
-    .card {
-      width: min(460px, 96%);
-      background: var(--card);
-      border-radius: 1.25rem;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,.08);
+    .login-container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 350px;
+      text-align: center;
     }
-
-    .card-head { padding: 1.25rem 1.25rem 0; }
-    .notice {
-      display: grid; grid-template-columns: 28px 1fr; gap: .75rem;
-      background: linear-gradient(180deg, rgba(13,110,253,.08), rgba(13,110,253,.02));
-      border: 1px solid rgba(13,110,253,.25);
-      color: var(--ink);
-      padding: .9rem 1rem; border-radius: .9rem;
-      font-size: .95rem;
+    .login-container h1 {
+      color: #003366;
+      margin-bottom: 20px;
     }
-    .notice svg{width: 20px; height: 20px; margin-top: 2px;}
-
-    .card-body { padding: 1.25rem; }
-
-    h1 { margin: .25rem 0 0; font-size: 1.35rem; line-height: 1.2; }
-    p.sub { margin: .35rem 0 0; color: var(--muted); font-size: .95rem; }
-
-    form { display: grid; gap: 1rem; margin-top: 1rem; }
-    .field { display: grid; gap: .5rem; }
-    label { font-weight: 600; font-size: .95rem; }
-
-    input[type="email"], input[type="password"], input[type="text"] {
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-size: 14px;
+    }
+    .form-group input {
       width: 100%;
-      padding: .8rem .9rem;
-      border-radius: .75rem;
-      border: 1px solid rgba(100,116,139,.35);
-      background: transparent;
-      color: inherit;
-      font: inherit;
-      outline: none;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
     }
-    input:focus { border-color: var(--ring); box-shadow: 0 0 0 4px color-mix(in oklab, var(--ring) 30%, transparent); }
-
-    .input-row{ position: relative; }
-    .toggle-visibility{
-      position: absolute; right: .4rem; top: 50%; transform: translateY(-50%);
-      border: none; background: transparent; cursor: pointer; padding: .5rem; border-radius: .5rem;
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: #003366;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
     }
-    .toggle-visibility:focus{ outline: 2px solid var(--ring); }
-
-    .row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
-    .row .left { display: flex; align-items: center; gap: .5rem; }
-
-    .actions { display: grid; gap: .75rem; }
-
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-      padding: .85rem 1rem; border-radius: .8rem; border: none; cursor: pointer; font-weight: 600;
-      transition: transform .05s ease, box-shadow .2s ease;
-    }
-    .btn-primary{ background: var(--primary); color: var(--primary-ink); box-shadow: 0 6px 20px rgba(13,110,253,.3); }
-    .btn-primary:hover{ transform: translateY(-1px); }
-    .btn-primary:disabled{ opacity: .7; cursor: not-allowed; box-shadow: none; }
-
-    .checkbox { width: 1.1rem; height: 1.1rem; }
-
-    .helper { font-size: .9rem; color: var(--muted); }
-    .error { color: var(--danger); font-size: .9rem; }
-
-    .divider { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem; color: var(--muted); font-size:.9rem; }
-    .divider::before,.divider::after{ content:""; height:1px; background: currentColor; opacity:.25; }
-
-    .security {
-      display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .75rem; margin-top: 1rem; color: var(--muted); font-size: .85rem;
-    }
-    .security > div { display:flex; align-items:center; gap:.5rem; background: rgba(255,255,255,.04); border:1px solid rgba(148,163,184,.25); padding:.6rem .7rem; border-radius:.7rem; }
-
-    footer { color: #c8d2ea; }
-    footer a { color: #c8d2ea; }
-
-    /* Reduce motion for accessibility */
-    @media (prefers-reduced-motion: reduce) {
-      .btn-primary { transition: none; }
+    .login-btn:hover {
+      background: #00509e;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap" role="banner">
-      <a class="brand" href="#" aria-label="ProBank home">
-        <!-- Simple shield/lock logo -->
-        <svg viewBox="0 0 48 48" aria-hidden="true" fill="none">
-          <defs>
-            <linearGradient id="g" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#4f9cff" />
-              <stop offset="1" stop-color="#22d3ee" />
-            </linearGradient>
-          </defs>
-          <path d="M24 4l14 6v9c0 11-7.5 20-14 22-6.5-2-14-11-14-22V10l14-6z" fill="url(#g)"/>
-          <rect x="18" y="18" width="12" height="10" rx="2" fill="#fff"/>
-          <circle cx="24" cy="23" r="2" fill="#4f46e5"/>
-        </svg>
-        <b>ProBank</b>
-      </a>
-      <nav aria-label="Top">
-        <a class="brand" href="#" style="opacity:.85"><svg width="0" height="0" aria-hidden="true"></svg><b>Support</b></a>
-      </nav>
+  <div class="login-container">
+    <h1>Bank Login</h1>
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" placeholder="Enter your email">
     </div>
-  </header>
-
-  <main>
-    <section class="card" aria-labelledby="loginTitle">
-      <div class="card-head">
-        <div class="notice" role="status" aria-live="polite">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 6v6h-2V8h2zm-1 10a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"/></svg>
-  
-        </div>
-      </div>
-      <div class="card-body">
-        <h1 id="loginTitle">Sign in to Online Banking</h1>
-        <p class="sub">Welcome back. Please use your email and password to continue.</p>
-
-        <form id="loginForm" novalidate autocomplete="on" aria-describedby="formHelper">
-          <!-- Hidden placeholder for CSRF; in production, populate server-side -->
-          <input type="hidden" name="csrf_token" value="{{CSRF_TOKEN}}" />
-
-          <div class="field">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" inputmode="email" autocomplete="username" placeholder="you@example.com" required aria-required="true" />
-            <div class="error" id="emailError" hidden>Enter a valid email address.</div>
-          </div>
-
-          <div class="field">
-            <div class="row" style="justify-content: space-between;">
-              <label for="password">Password</label>
-              <a href="#" class="helper" id="forgotLink">Forgot password?</a>
-            </div>
-            <div class="input-row">
-              <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Your password" minlength="8" required aria-required="true" />
-              <button type="button" class="toggle-visibility" aria-controls="password" aria-label="Show password" id="togglePassword">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-                  <path id="eyeIcon" d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
-                </svg>
-              </button>
-            </div>
-            <div class="error" id="passwordError" hidden>Password must be at least 8 characters.</div>
-          </div>
-
-          <div class="row">
-            <div class="left">
-              <input id="remember" name="remember" type="checkbox" class="checkbox" />
-              <label for="remember" class="helper">Remember this device</label>
-            </div>
-            <span class="helper" id="formHelper">Use a private device and keep your software up to date.</span>
-          </div>
-
-          <div class="actions">
-            <button id="submitBtn" class="btn btn-primary" type="submit" disabled>
-              <span>Sign in</span>
-            </button>
-            <div class="divider">or</div>
-            <button class="btn" type="button" id="twoFAButton" style="border:1px solid rgba(100,116,139,.35)">Use one‑time passcode</button>
-          </div>
-
-          <div class="security" aria-label="Security badges">
-            <div title="TLS 1.3 Encryption">🔒 <span>TLS 1.3</span></div>
-            <div title="FDIC Insured (Demo)">🏛️ <span>FDIC Insured*</span></div>
-            <div title="Fraud Monitoring">🛡️ <span>Fraud Monitoring</span></div>
-          </div>
-
-        </form>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="wrap" role="contentinfo" style="justify-content:center;">
-      <small>© <span id="year"></span> ProBank. For demonstration only. *FDIC label shown for styling demo and not a real bank.</small>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter your password">
     </div>
-  </footer>
+    <button class="login-btn" onclick="login()">Login</button>
+  </div>
 
   <script>
-    // Utility: basic email check
-    function isValidEmail(v){
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-    }
-
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const emailError = document.getElementById('emailError');
-    const passwordError = document.getElementById('passwordError');
-    const submitBtn = document.getElementById('submitBtn');
-    const form = document.getElementById('loginForm');
-    const togglePassword = document.getElementById('togglePassword');
-    const eyeIcon = document.getElementById('eyeIcon');
-
-    // Enable submit when valid
-    function updateButtonState(){
-      const ok = isValidEmail(email.value.trim()) && password.value.trim().length >= 8;
-      submitBtn.disabled = !ok;
-    }
-
-    email.addEventListener('input', () => {
-      emailError.hidden = isValidEmail(email.value.trim());
-      updateButtonState();
-    });
-
-    password.addEventListener('input', () => {
-      passwordError.hidden = password.value.trim().length >= 8;
-      updateButtonState();
-    });
-
-    togglePassword.addEventListener('click', () => {
-      const isHidden = password.type === 'password';
-      password.type = isHidden ? 'text' : 'password';
-      togglePassword.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
-      // Swap icon between eye and eye-off
-      eyeIcon.setAttribute('d', isHidden
-        ? 'M12 5c-7 0-10 7-10 7s3 7 10 7c1.8 0 3.5-.5 5-1.3l2.3 2.3 1.4-1.4-2.2-2.2C20.6 14.6 22 12 22 12s-3-7-10-7c-1.8 0-3.5.5-5 1.3L4.7 4l-1.4 1.4L5 7.1A14.6 14.6 0 002 12s3 7 10 7c1.8 0 3.5-.5 5-1.3l2.3 2.3 1.4-1.4-2.2-2.2C20.6 14.6 22 12 22 12s-3-7-10-7z'
-        : 'M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12a5 5 0 110-10 5 5 0 010 10z');
-    });
-
-    // Fake submit handler (demo only)
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      emailError.hidden = isValidEmail(email.value.trim());
-      passwordError.hidden = password.value.trim().length >= 8;
-      if (submitBtn.disabled) return;
-
-      // In production, send credentials over HTTPS POST and handle securely
-      alert('This is a demo. In production, this would submit securely to your server.');
-    });
-
-    document.getElementById('twoFAButton').addEventListener('click', () => {
-      // Mock 2FA flow
-      const code = prompt('Enter the 6‑digit one‑time passcode (demo):');
-      if (!code) return;
-      if (/^\d{6}$/.test(code)) {
-        alert('Code accepted (demo).');
+    function login() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      
+      if (email && password) {
+        // Redirect if fields are not empty
+        window.location.href = "dashboard.html";
       } else {
-        alert('Invalid code format (demo).');
+        alert("Please enter both email and password.");
       }
-    });
-
-    document.getElementById('year').textContent = new Date().getFullYear();
+    }
   </script>
 </body>
 </html>
