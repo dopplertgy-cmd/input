@@ -1,301 +1,339 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ProBank — Secure Login</title>
-  <meta name="color-scheme" content="light dark" />
-  <meta name="description" content="Sample professional bank login page (demo)." />
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <title>Kitchen Shop — Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #0b1020;
-      --bg-2: #0e1530;
-      --card: #ffffff;
-      --ink: #0f172a;
-      --muted: #5b647a;
-      --primary: #0d6efd;
-      --primary-ink: #ffffff;
-      --ring: #80b3ff;
-      --success: #198754;
-      --danger: #dc3545;
-      --warning: #f59e0b;
-      --shadow: 0 10px 25px rgba(2,12,27,.25);
-    }
-    @media (prefers-color-scheme: dark) {
-      :root{ --card:#101827; --ink:#e5eefb; --muted:#9fb0cc; --bg:#050913; --bg-2:#090f22; --shadow: 0 10px 25px rgba(0,0,0,.5);} 
+      --bg: #0b0d10;
+      --card: #141820;
+      --muted: #8a99b2;
+      --text: #e9eef7;
+      --accent: #4cc9f0;
+      --accent-2: #80ed99;
+      --danger: #ff6b6b;
+      --ring: rgba(76, 201, 240, 0.35);
+      --shadow: 0 10px 25px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.2);
+      --radius: 16px;
     }
 
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
     body {
       margin: 0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      color: var(--ink);
-      background: radial-gradient(1200px 600px at 15% 0%, rgba(13,110,253,.25), transparent 60%),
-                  radial-gradient(1000px 500px at 100% 100%, rgba(56,189,248,.15), transparent 60%),
-                  linear-gradient(180deg, var(--bg), var(--bg-2));
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      min-height: 100dvh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 20% -10%, #112235 0%, #0b0d10 55%) fixed;
+      color: var(--text);
     }
 
-    header, footer { display: flex; align-items: center; justify-content: center; padding: 1rem; }
-    header .wrap, footer .wrap { width: min(1100px, 92%); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      backdrop-filter: saturate(140%) blur(10px);
+      background: rgba(8, 12, 16, 0.6);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .brand .logo {
+      width: 32px; height: 32px; border-radius: 10px;
+      display: grid; place-items: center; font-size: 18px; 
+      background: linear-gradient(135deg, #4cc9f0, #4895ef);
+      box-shadow: 0 6px 18px rgba(72,149,239,0.45);
+    }
+    .muted { color: var(--muted); font-weight: 500; }
 
-    .brand { display: inline-flex; align-items: center; gap: .75rem; color: #fff; text-decoration: none; }
-    .brand svg { width: 36px; height: 36px; }
-    .brand b { font-weight: 700; letter-spacing: .2px; font-size: 1.05rem; }
+    /* Cart button */
+    .cart-link {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+      transition: transform .12s ease, box-shadow .12s ease, border-color .2s ease;
+    }
+    .cart-link:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.18); }
+    .cart-icon { font-size: 20px; }
+    .cart-count {
+      position: absolute; top: -6px; right: -6px;
+      min-width: 22px; height: 22px; padding: 0 6px;
+      display: grid; place-items: center;
+      border-radius: 999px; font-size: 12px; font-weight: 700;
+      color: #061018; background: linear-gradient(135deg, #80ed99, #57cc99);
+      border: 1px solid rgba(0,0,0,0.15);
+      box-shadow: 0 6px 16px rgba(87,204,153,0.45);
+    }
 
-    main { display: grid; place-items: center; padding: 3rem 1rem; }
+    /* Content */
+    .wrap {
+      max-width: 1100px;
+      margin: 24px auto 80px;
+      padding: 0 20px;
+    }
+
+    .hero {
+      margin: 16px 0 24px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .hero h1 { margin: 0; font-size: 28px; letter-spacing: .3px; }
+    .hero p { margin: 0; color: var(--muted); }
+
+    /* Grid of products */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: repeat(6, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .grid { grid-template-columns: repeat(4, 1fr); }
+    }
 
     .card {
-      width: min(460px, 96%);
-      background: var(--card);
-      border-radius: 1.25rem;
+      grid-column: span 4;
+      display: flex; flex-direction: column; gap: 12px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,.08);
+      transition: transform .15s ease, border-color .2s ease, box-shadow .2s ease;
+      cursor: pointer;
+      user-select: none;
     }
+    .card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.18); box-shadow: 0 16px 35px rgba(0,0,0,0.35); }
+    .card:focus-visible { outline: 3px solid var(--ring); }
 
-    .card-head { padding: 1.25rem 1.25rem 0; }
-    .notice {
-      display: grid; grid-template-columns: 28px 1fr; gap: .75rem;
-      background: linear-gradient(180deg, rgba(13,110,253,.08), rgba(13,110,253,.02));
-      border: 1px solid rgba(13,110,253,.25);
-      color: var(--ink);
-      padding: .9rem 1rem; border-radius: .9rem;
-      font-size: .95rem;
+    .thumb {
+      height: 160px;
+      border-radius: 12px;
+      display: grid; place-items: center;
+      background:
+        radial-gradient(220px 120px at 20% 10%, rgba(76, 201, 240, 0.2), transparent 60%),
+        radial-gradient(220px 120px at 90% 60%, rgba(128, 237, 153, 0.18), transparent 60%),
+        linear-gradient(180deg, #0f1420, #0c1016);
+      border: 1px solid rgba(255,255,255,0.06);
     }
-    .notice svg{width: 20px; height: 20px; margin-top: 2px;}
+    .thumb svg { width: 86px; height: 86px; opacity: 0.95; }
 
-    .card-body { padding: 1.25rem; }
-
-    h1 { margin: .25rem 0 0; font-size: 1.35rem; line-height: 1.2; }
-    p.sub { margin: .35rem 0 0; color: var(--muted); font-size: .95rem; }
-
-    form { display: grid; gap: 1rem; margin-top: 1rem; }
-    .field { display: grid; gap: .5rem; }
-    label { font-weight: 600; font-size: .95rem; }
-
-    input[type="email"], input[type="password"], input[type="text"] {
-      width: 100%;
-      padding: .8rem .9rem;
-      border-radius: .75rem;
-      border: 1px solid rgba(100,116,139,.35);
-      background: transparent;
-      color: inherit;
-      font: inherit;
-      outline: none;
+    .title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .price { font-weight: 800; }
+    .add {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center; gap: 8px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #4cc9f0 0%, #4895ef 100%);
+      color: #07121a;
+      border: 1px solid rgba(0,0,0,0.15);
+      font-weight: 800;
+      letter-spacing: .2px;
+      cursor: pointer;
+      transition: transform .12s ease, filter .12s ease;
     }
-    input:focus { border-color: var(--ring); box-shadow: 0 0 0 4px color-mix(in oklab, var(--ring) 30%, transparent); }
+    .add:hover { transform: translateY(-1px); filter: brightness(1.05); }
 
-    .input-row{ position: relative; }
-    .toggle-visibility{
-      position: absolute; right: .4rem; top: 50%; transform: translateY(-50%);
-      border: none; background: transparent; cursor: pointer; padding: .5rem; border-radius: .5rem;
+    .note { color: var(--muted); font-size: 14px; margin-top: -6px; }
+
+    /* Toast */
+    .toast {
+      position: fixed; inset-inline: 0; bottom: 20px;
+      display: grid; place-items: center; pointer-events: none;
     }
-    .toggle-visibility:focus{ outline: 2px solid var(--ring); }
-
-    .row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
-    .row .left { display: flex; align-items: center; gap: .5rem; }
-
-    .actions { display: grid; gap: .75rem; }
-
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-      padding: .85rem 1rem; border-radius: .8rem; border: none; cursor: pointer; font-weight: 600;
-      transition: transform .05s ease, box-shadow .2s ease;
+    .toast .bubble {
+      padding: 12px 16px;
+      background: #10161f;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: transform .2s ease, opacity .2s ease;
     }
-    .btn-primary{ background: var(--primary); color: var(--primary-ink); box-shadow: 0 6px 20px rgba(13,110,253,.3); }
-    .btn-primary:hover{ transform: translateY(-1px); }
-    .btn-primary:disabled{ opacity: .7; cursor: not-allowed; box-shadow: none; }
-
-    .checkbox { width: 1.1rem; height: 1.1rem; }
-
-    .helper { font-size: .9rem; color: var(--muted); }
-    .error { color: var(--danger); font-size: .9rem; }
-
-    .divider { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem; color: var(--muted); font-size:.9rem; }
-    .divider::before,.divider::after{ content:""; height:1px; background: currentColor; opacity:.25; }
-
-    .security {
-      display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .75rem; margin-top: 1rem; color: var(--muted); font-size: .85rem;
-    }
-    .security > div { display:flex; align-items:center; gap:.5rem; background: rgba(255,255,255,.04); border:1px solid rgba(148,163,184,.25); padding:.6rem .7rem; border-radius:.7rem; }
-
-    footer { color: #c8d2ea; }
-    footer a { color: #c8d2ea; }
-
-    /* Reduce motion for accessibility */
-    @media (prefers-reduced-motion: reduce) {
-      .btn-primary { transition: none; }
+    .toast.show .bubble { transform: translateY(0); opacity: 1; }
+    .sr-only {
+      position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap" role="banner">
-      <a class="brand" href="#" aria-label="ProBank home">
-        <!-- Simple shield/lock logo -->
-        <svg viewBox="0 0 48 48" aria-hidden="true" fill="none">
-          <defs>
-            <linearGradient id="g" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#4f9cff" />
-              <stop offset="1" stop-color="#22d3ee" />
-            </linearGradient>
-          </defs>
-          <path d="M24 4l14 6v9c0 11-7.5 20-14 22-6.5-2-14-11-14-22V10l14-6z" fill="url(#g)"/>
-          <rect x="18" y="18" width="12" height="10" rx="2" fill="#fff"/>
-          <circle cx="24" cy="23" r="2" fill="#4f46e5"/>
-        </svg>
-        <b>ProBank</b>
-      </a>
-      <nav aria-label="Top">
-        <a class="brand" href="#" style="opacity:.85"><svg width="0" height="0" aria-hidden="true"></svg><b>Support</b></a>
-      </nav>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="brand" aria-label="Kitchen Shop Home">
+      <div class="logo" aria-hidden="true">🍳</div>
+      <div>
+        <div>Kitchen Shop</div>
+        <div class="muted" style="font-size:12px">Tiny demo store</div>
+      </div>
     </div>
+
+    <!-- Cart (top-right). Clicking navigates to bank.html -->
+    <a class="cart-link" href="bank.html" aria-label="View cart and checkout">
+      <span class="cart-icon" aria-hidden="true">🛒</span>
+      <span class="muted">Cart</span>
+      <span class="cart-count" id="cartCount" aria-live="polite">0</span>
+    </a>
   </header>
 
-  <main>
-    <section class="card" aria-labelledby="loginTitle">
-      <div class="card-head">
-        <div class="notice" role="status" aria-live="polite">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 6v6h-2V8h2zm-1 10a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"/></svg>
-          <div>
-            <strong>Demo site:</strong> Do not enter real credentials. This page demonstrates layout, accessibility, and UI behavior only.
-          </div>
+  <main class="wrap">
+    <section class="hero" aria-labelledby="heading">
+      <h1 id="heading">Shop cookware</h1>
+      <p>Click any item (or its “Add to cart” button) to add it. Hit the cart to head to <strong>bank.html</strong>.</p>
+    </section>
+
+    <!-- Products grid -->
+    <section class="grid" aria-label="Products">
+      <!-- Frying Pan -->
+      <article class="card" tabindex="0" data-name="Frying Pan" data-price="24.99">
+        <div class="thumb" aria-hidden="true">
+          <!-- Simple pan icon -->
+          <svg viewBox="0 0 64 64" fill="none">
+            <circle cx="24" cy="36" r="14" stroke="white" stroke-opacity=".9" stroke-width="3"/>
+            <rect x="36" y="28" width="22" height="6" rx="3" fill="white" fill-opacity=".9"/>
+          </svg>
         </div>
-      </div>
-      <div class="card-body">
-        <h1 id="loginTitle">Sign in to Online Banking</h1>
-        <p class="sub">Welcome back. Please use your email and password to continue.</p>
+        <div class="title-row">
+          <h2 style="margin:0;font-size:18px;">Frying Pan</h2>
+          <div class="price">$24.99</div>
+        </div>
+        <p class="note">Non-stick, 10&quot; aluminum.</p>
+        <button class="add" type="button" aria-label="Add Frying Pan to cart">＋ Add to cart</button>
+      </article>
 
-        <form id="loginForm" novalidate autocomplete="on" aria-describedby="formHelper">
-          <!-- Hidden placeholder for CSRF; in production, populate server-side -->
-          <input type="hidden" name="csrf_token" value="{{CSRF_TOKEN}}" />
+      <!-- Pot -->
+      <article class="card" tabindex="0" data-name="Pot" data-price="34.50">
+        <div class="thumb" aria-hidden="true">
+          <!-- Simple pot icon -->
+          <svg viewBox="0 0 64 64" fill="none">
+            <rect x="10" y="22" width="44" height="22" rx="6" stroke="white" stroke-opacity=".9" stroke-width="3"/>
+            <rect x="24" y="16" width="16" height="4" rx="2" fill="white" fill-opacity=".9"/>
+          </svg>
+        </div>
+        <div class="title-row">
+          <h2 style="margin:0;font-size:18px;">Pot</h2>
+          <div class="price">$34.50</div>
+        </div>
+        <p class="note">4 qt stainless steel.</p>
+        <button class="add" type="button" aria-label="Add Pot to cart">＋ Add to cart</button>
+      </article>
 
-          <div class="field">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" inputmode="email" autocomplete="username" placeholder="you@example.com" required aria-required="true" />
-            <div class="error" id="emailError" hidden>Enter a valid email address.</div>
-          </div>
-
-          <div class="field">
-            <div class="row" style="justify-content: space-between;">
-              <label for="password">Password</label>
-              <a href="#" class="helper" id="forgotLink">Forgot password?</a>
-            </div>
-            <div class="input-row">
-              <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Your password" minlength="8" required aria-required="true" />
-              <button type="button" class="toggle-visibility" aria-controls="password" aria-label="Show password" id="togglePassword">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-                  <path id="eyeIcon" d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/>
-                </svg>
-              </button>
-            </div>
-            <div class="error" id="passwordError" hidden>Password must be at least 8 characters.</div>
-          </div>
-
-          <div class="row">
-            <div class="left">
-              <input id="remember" name="remember" type="checkbox" class="checkbox" />
-              <label for="remember" class="helper">Remember this device</label>
-            </div>
-            <span class="helper" id="formHelper">Use a private device and keep your software up to date.</span>
-          </div>
-
-          <div class="actions">
-            <button id="submitBtn" class="btn btn-primary" type="submit" disabled>
-              <span>Sign in</span>
-            </button>
-            <div class="divider">or</div>
-            <button class="btn" type="button" id="twoFAButton" style="border:1px solid rgba(100,116,139,.35)">Use one‑time passcode</button>
-          </div>
-
-          <div class="security" aria-label="Security badges">
-            <div title="TLS 1.3 Encryption">🔒 <span>TLS 1.3</span></div>
-            <div title="FDIC Insured (Demo)">🏛️ <span>FDIC Insured*</span></div>
-            <div title="Fraud Monitoring">🛡️ <span>Fraud Monitoring</span></div>
-          </div>
-
-        </form>
-      </div>
+      <!-- Spatula -->
+      <article class="card" tabindex="0" data-name="Spatula" data-price="7.25">
+        <div class="thumb" aria-hidden="true">
+          <!-- Simple spatula icon -->
+          <svg viewBox="0 0 64 64" fill="none">
+            <rect x="12" y="16" width="16" height="28" rx="3" stroke="white" stroke-opacity=".9" stroke-width="3"/>
+            <rect x="28" y="28" width="24" height="6" rx="3" fill="white" fill-opacity=".9"/>
+          </svg>
+        </div>
+        <div class="title-row">
+          <h2 style="margin:0;font-size:18px;">Spatula</h2>
+          <div class="price">$7.25</div>
+        </div>
+        <p class="note">Heat-resistant silicone.</p>
+        <button class="add" type="button" aria-label="Add Spatula to cart">＋ Add to cart</button>
+      </article>
     </section>
   </main>
 
-  <footer>
-    <div class="wrap" role="contentinfo" style="justify-content:center;">
-      <small>© <span id="year"></span> ProBank. For demonstration only. *FDIC label shown for styling demo and not a real bank.</small>
-    </div>
-  </footer>
+  <!-- Toast -->
+  <div class="toast" id="toast" aria-live="polite" aria-atomic="true">
+    <div class="bubble" id="toastBubble">Added to cart</div>
+  </div>
+
+  <span class="sr-only" id="live" aria-live="polite"></span>
 
   <script>
-    // Utility: basic email check
-    function isValidEmail(v){
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    // --- Simple cart using localStorage -------------------------------------
+    const STORAGE_KEY = 'demo_cart_items';
+
+    function getCart() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+      catch { return []; }
+    }
+    function setCart(items) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      updateCartCount();
+    }
+    function addItem(name, price) {
+      const items = getCart();
+      items.push({ name, price: Number(price) });
+      setCart(items);
+      showToast(`${name} added to cart`);
+      announce(`${name} added to cart. Cart now has ${items.length} item${items.length===1?'':'s'}.`);
+    }
+    function updateCartCount() {
+      const count = getCart().length;
+      document.getElementById('cartCount').textContent = count;
+    }
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      const bubble = document.getElementById('toastBubble');
+      bubble.textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1300);
+    }
+    function announce(text) {
+      const live = document.getElementById('live');
+      live.textContent = ''; // reset for re-announce
+      setTimeout(() => { live.textContent = text; }, 20);
     }
 
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const emailError = document.getElementById('emailError');
-    const passwordError = document.getElementById('passwordError');
-    const submitBtn = document.getElementById('submitBtn');
-    const form = document.getElementById('loginForm');
-    const togglePassword = document.getElementById('togglePassword');
-    const eyeIcon = document.getElementById('eyeIcon');
+    // Attach listeners: clicking card or button adds to cart
+    function wireProducts() {
+      document.querySelectorAll('.card').forEach(card => {
+        const name = card.dataset.name;
+        const price = card.dataset.price;
 
-    // Enable submit when valid
-    function updateButtonState(){
-      const ok = isValidEmail(email.value.trim()) && password.value.trim().length >= 8;
-      submitBtn.disabled = !ok;
+        // Click entire card (but let inner links/buttons still work)
+        card.addEventListener('click', (e) => {
+          const isButton = e.target.closest('button');
+          if (!isButton) addItem(name, price);
+        });
+
+        // Button click
+        card.querySelector('.add').addEventListener('click', (e) => {
+          e.stopPropagation();
+          addItem(name, price);
+        });
+
+        // Enter/Space key adds to cart (accessibility)
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            addItem(name, price);
+          }
+        });
+      });
     }
 
-    email.addEventListener('input', () => {
-      emailError.hidden = isValidEmail(email.value.trim());
-      updateButtonState();
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCartCount();
+      wireProducts();
     });
-
-    password.addEventListener('input', () => {
-      passwordError.hidden = password.value.trim().length >= 8;
-      updateButtonState();
-    });
-
-    togglePassword.addEventListener('click', () => {
-      const isHidden = password.type === 'password';
-      password.type = isHidden ? 'text' : 'password';
-      togglePassword.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
-      // Swap icon between eye and eye-off
-      eyeIcon.setAttribute('d', isHidden
-        ? 'M12 5c-7 0-10 7-10 7s3 7 10 7c1.8 0 3.5-.5 5-1.3l2.3 2.3 1.4-1.4-2.2-2.2C20.6 14.6 22 12 22 12s-3-7-10-7c-1.8 0-3.5.5-5 1.3L4.7 4l-1.4 1.4L5 7.1A14.6 14.6 0 002 12s3 7 10 7c1.8 0 3.5-.5 5-1.3l2.3 2.3 1.4-1.4-2.2-2.2C20.6 14.6 22 12 22 12s-3-7-10-7z'
-        : 'M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12a5 5 0 110-10 5 5 0 010 10z');
-    });
-
-    // Fake submit handler (demo only)
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      emailError.hidden = isValidEmail(email.value.trim());
-      passwordError.hidden = password.value.trim().length >= 8;
-      if (submitBtn.disabled) return;
-
-      // In production, send credentials over HTTPS POST and handle securely
-      alert('This is a demo. In production, this would submit securely to your server.');
-    });
-
-    document.getElementById('twoFAButton').addEventListener('click', () => {
-      // Mock 2FA flow
-      const code = prompt('Enter the 6‑digit one‑time passcode (demo):');
-      if (!code) return;
-      if (/^\d{6}$/.test(code)) {
-        alert('Code accepted (demo).');
-      } else {
-        alert('Invalid code format (demo).');
-      }
-    });
-
-    document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
