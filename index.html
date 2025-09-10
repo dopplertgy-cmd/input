@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Send a Message</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    body { display:grid; place-items:center; min-height:100vh; background:#0b0b0c; color:#e8e8ea; }
+    .card { width:min(620px, 92vw); background:#151518; border:1px solid #26262b; border-radius:16px; padding:24px; box-shadow:0 8px 30px rgba(0,0,0,.35); }
+    h1 { margin:0 0 8px; font-size:1.3rem; }
+    p.caption { margin:0 0 16px; color:#a5a7ae; font-size:.95rem; }
+    label { display:block; margin:14px 0 6px; font-weight:600; }
+    input[type="text"], textarea {
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid #2b2b31; background:#111114; color:#e8e8ea;
+    }
+    textarea { min-height:140px; resize:vertical; }
+    .row { display:flex; gap:12px; }
+    .row > * { flex:1; }
+    button {
+      margin-top:16px; width:100%; padding:12px 16px; border:0; border-radius:12px; font-weight:700; cursor:pointer;
+      background:#6a7dff; color:#0b0b0c;
+    }
+    button:disabled { opacity:.6; cursor:not-allowed; }
+    .note { margin-top:10px; color:#a5a7ae; font-size:.9rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Send a message</h1>
+    <p class="caption">Your message will open in your email app, addressed to <strong>dopplertgy@gmail.com</strong>.</p>
+
+    <form id="sendForm">
+      <div class="row">
+        <div>
+          <label for="subject">Subject</label>
+          <input id="subject" name="subject" type="text" placeholder="Quick hello" maxlength="120" />
+        </div>
+        <div>
+          <label for="fromName">Your name (optional)</label>
+          <input id="fromName" name="fromName" type="text" placeholder="Your name" maxlength="60" />
+        </div>
+      </div>
+
+      <label for="message">Message</label>
+      <textarea id="message" name="message" placeholder="Type your message here…"></textarea>
+
+      <button id="sendBtn" type="submit">Send to dopplertgy@gmail.com</button>
+      <div class="note">Tip: This uses <code>mailto:</code>, so it requires an email client (e.g., Gmail, Outlook) to be set up on this device.</div>
+    </form>
+
+    <!--
+      Want silent/background sending without opening an email app?
+      1) Create a free endpoint at https://formspree.io (or similar).
+      2) Replace FORM_ENDPOINT below with your endpoint URL.
+      3) Uncomment the "USE_FORMSERVICE" flag and the fetch() block in the JS.
+    -->
+  </div>
+
+  <script>
+    (function () {
+      const FORM = document.getElementById('sendForm');
+      const BTN = document.getElementById('sendBtn');
+
+      const TO_EMAIL = "dopplertgy@gmail.com";
+
+      // --- Toggle sending method ---
+      const USE_MAILTO = true;          // default: open user's email app
+      // const USE_FORMSERVICE = true;  // alternative: post to a form service (requires endpoint)
+
+      // Replace with your Formspree (or similar) endpoint if using a form service
+      const FORM_ENDPOINT = "https://formspree.io/f/yourEndpointHere";
+
+      FORM.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const subject = document.getElementById('subject').value.trim() || "Hello";
+        const fromName = document.getElementById('fromName').value.trim();
+        const message = document.getElementById('message').value.trim();
+
+        if (!message) {
+          alert("Please enter a message before sending.");
+          return;
+        }
+
+        if (USE_MAILTO) {
+          // Build a mailto URI safely
+          const header = subject + (fromName ? ` — from ${fromName}` : "");
+          const body = message + (fromName ? `\n\n— ${fromName}` : "");
+          const href = `mailto:${encodeURIComponent(TO_EMAIL)}?subject=${encodeURIComponent(header)}&body=${encodeURIComponent(body)}`;
+
+          // Open the user's default mail client
+          window.location.href = href;
+          return;
+        }
+
+        // if (USE_FORMSERVICE) {
+        //   try {
+        //     BTN.disabled = true;
+        //     const payload = {
+        //       to: TO_EMAIL,
+        //       subject,
+        //       message,
+        //       fromName
+        //     };
+        //     const res = await fetch(FORM_ENDPOINT, {
+        //       method: "POST",
+        //       headers: { "Content-Type": "application/json" },
+        //       body: JSON.stringify(payload)
+        //     });
+        //     if (!res.ok) throw new Error("Failed to send.");
+        //     alert("Sent! We'll let them know.");
+        //     FORM.reset();
+        //   } catch (err) {
+        //     console.error(err);
+        //     alert("Sorry—couldn't send right now.");
+        //   } finally {
+        //     BTN.disabled = false;
+        //   }
+        // }
+      });
+    })();
+  </script>
+</body>
+</html>
