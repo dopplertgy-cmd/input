@@ -157,7 +157,8 @@
       </header>
 
       <div class="editor" aria-label="New comment editor">
-        <input type="text" id="author" placeholder="Your name (optional)" />
+        <input type="text" id="author" placeholder="Your name (required)" />
+        <input type="text" id="email" placeholder="Your email (required)" />
         <textarea id="text" placeholder="What are your thoughts?"></textarea>
         <div style="display:flex; gap:8px; justify-content:flex-end">
           <button class="btn ghost" id="previewBtn">Preview</button>
@@ -195,7 +196,7 @@
     const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 
     const seed = {
-      post: { id: 'post-1', score: 1, created: now()-3600_000, title: 'Show HN: A tiny Reddit‑like in one HTML file', author: 'demo_user', body: `This sample mimics a Reddit post with nested comments. Everything runs locally in your browser. Try adding comments, replies, upvoting, sorting by Top/New, and refreshing the page — your data persists via localStorage.` },
+      post: { id: 'post-1', score: 1, created: now()-3600_000, title: 'ChatGPT enshittification begins :/', author: 'demo_user', body: `Does anyone else feel like ChatGPT has been getting worse lately?` },
       comments: [
         { id: uid(), parent: null, author: 'alice', text: 'Love the minimalism!', score: 5, created: now()-1800_000 },
         { id: uid(), parent: null, author: 'bob', text: 'Could use markdown support.', score: 2, created: now()-1200_000 },
