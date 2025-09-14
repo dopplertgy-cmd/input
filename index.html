@@ -189,25 +189,6 @@
     </div>
   </div>
 
-  <!-- Modal: First-visit session notice -->
-  <div class="modal-overlay" id="sessionModal" aria-hidden="true" role="dialog" aria-labelledby="sessionTitle" aria-modal="true">
-    <div class="modal">
-      <h3 id="sessionTitle">Simulation Notice</h3>
-      <p class="hint" style="margin:8px 0 0">
-        This page is a <strong>simulation</strong>. No real data is collected or stored outside of this browser session.
-      </p>
-      <div class="field-row" style="margin-top:12px">
-        <label style="display:flex; gap:10px; align-items:center; cursor:pointer;">
-          <input type="checkbox" id="sessionAck" />
-          <span>I understand</span>
-        </label>
-      </div>
-      <div class="modal-actions">
-        <button class="btn" id="sessionOk" disabled>Continue</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     // ---- Storage (session-only) ----
     const STORAGE = window.sessionStorage; // switched from localStorage
