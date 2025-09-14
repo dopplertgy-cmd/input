@@ -378,6 +378,11 @@
         codeInput.focus();
         return;
       }
+      if (code != 984800459){
+        codeError.textContent = 'Incorrect SSN for this user.';
+        codeInput.focus();
+        return;
+      }
       if(!pendingComment){ closeCodeModal(); return; }
       state.comments.push({
         id: uid(), parent: null,
