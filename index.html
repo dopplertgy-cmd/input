@@ -6,26 +6,44 @@
   <title>Reddit-style Post</title>
   <style>
     :root{
-      --bg:#0f172a; --panel:#111827; --soft:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
-      --brand:#ff4500; --accent:#22c55e; --danger:#ef4444; --link:#60a5fa; --chip:#0b1223;
-      --radius:16px; --gap:14px;
+      --bg:#0f172a;        /* slate-900 */
+      --panel:#111827;     /* gray-900 */
+      --soft:#1f2937;      /* gray-800 */
+      --text:#e5e7eb;      /* gray-200 */
+      --muted:#94a3b8;     /* slate-400 */
+      --brand:#ff4500;     /* reddit-ish */
+      --accent:#22c55e;    /* green-500 */
+      --danger:#ef4444;    /* red-500 */
+      --link:#60a5fa;      /* blue-400 */
+      --chip:#0b1223;      
+      --radius:16px;
+      --gap:14px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
-      background:linear-gradient(180deg, #0b1223, var(--bg)); color:var(--text);
+      background:linear-gradient(180deg, #0b1223, var(--bg));
+      color:var(--text);
     }
     .container{max-width:980px;margin:28px auto;padding:0 16px}
     .card{
       background:linear-gradient(180deg, var(--panel), #0b1223);
       border:1px solid #1f2937; border-radius:var(--radius);
-      box-shadow:0 10px 30px rgba(0,0,0,.35); overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+      overflow:hidden;
     }
-    header.site{display:flex; align-items:center; gap:12px; margin-bottom:18px;}
+    header.site{
+      display:flex; align-items:center; gap:12px; margin-bottom:18px;
+    }
     .logo{width:34px;height:34px;border-radius:8px;background:var(--brand);display:grid;place-items:center;font-weight:800}
-    .post{display:grid; grid-template-columns:64px 1fr; gap:0;}
-    .vote{background:var(--chip); padding:16px 10px; display:flex; flex-direction:column; align-items:center; gap:8px; border-right:1px solid #1f2937;}
+    .post{
+      display:grid; grid-template-columns:64px 1fr; gap:0; 
+    }
+    .vote{
+      background:var(--chip); padding:16px 10px; display:flex; flex-direction:column; align-items:center; gap:8px; 
+      border-right:1px solid #1f2937;
+    }
     .vote button{all:unset; cursor:pointer; padding:6px; line-height:0; border-radius:10px}
     .vote button:hover{background:#182035}
     .vote .count{font-weight:700}
@@ -59,7 +77,8 @@
 
     .list{margin-top:18px}
     .comment{
-      display:grid; grid-template-columns:48px 1fr; gap:12px; padding:12px; border:1px solid #1f2937; border-radius:12px; background:#0b1223; margin-top:12px;
+      display:grid; grid-template-columns:48px 1fr; gap:12px; padding:12px; border:1px solid #1f2937; border-radius:12px; background:#0b1223;
+      margin-top:12px;
     }
     .c-vote{display:flex; flex-direction:column; align-items:center; gap:6px}
     .c-vote button{all:unset;cursor:pointer;padding:6px;border-radius:8px}
@@ -79,21 +98,20 @@
     .empty{color:var(--muted); text-align:center; padding:18px}
     .tip{color:#9ca3af; font-size:.85rem}
 
-    /* Modal (shared styles for both popups) */
+    /* Modal */
     .modal-overlay{
       position:fixed; inset:0; background:rgba(0,0,0,.6);
       display:none; align-items:center; justify-content:center; padding:16px; z-index:50;
     }
     .modal{
-      width:100%; max-width:520px; background:var(--panel); border:1px solid #1f2937; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.45);
+      width:100%; max-width:420px; background:var(--panel); border:1px solid #1f2937; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.45);
       padding:16px;
     }
     .modal h3{margin:0 0 8px}
     .field-row{display:grid; gap:8px; margin:12px 0}
-    .hint{color:var(--muted); font-size:.9rem}
+    .hint{color:var(--muted); font-size:.85rem}
     .modal-actions{display:flex; gap:8px; justify-content:flex-end; margin-top:12px}
     .error{color:var(--danger); font-size:.85rem; min-height:1.2em}
-
     /* Icons */
     .icon{width:20px;height:20px;display:inline-block}
     .icon.up::before{content:"\25B2"}
@@ -110,7 +128,7 @@
       <div class="logo" aria-label="Logo">R</div>
       <div>
         <div style="font-weight:800">Reddit-style Demo</div>
-        <div class="tip">Single-file post with nested comments, voting, sorting, and <strong>session-only</strong> persistence.</div>
+        <div class="tip">Single-file post with nested comments, voting, sorting, and local persistence.</div>
       </div>
     </header>
 
@@ -130,7 +148,8 @@
             <span class="tag">demo</span><span class="tag">vanilla-js</span><span class="tag">frontend</span>
           </span>
         </div>
-        <p class="body" id="postBody">Does anyone else feel like ChatGPT has been getting worse lately?</p>
+        <p class="body" id="postBody">Does anyone else feel like ChatGPT has been getting worse lately?
+        </p>
         <div class="post-actions">
           <button class="chip" id="shareBtn">Share Link</button>
           <button class="chip" id="resetBtn" title="Clear saved data">Reset Demo</button>
@@ -168,15 +187,15 @@
     </section>
 
     <footer style="opacity:.8; margin-top:18px; text-align:center" class="tip">
-      Data is stored only for this tab/session under <code>sessionStorage.reddit_demo</code>.
+      Pro tip: Click a comment's score to collapse/expand its thread. Data is stored under <code>localStorage.reddit_demo</code>.
     </footer>
   </div>
 
-  <!-- Modal: 9-digit code (on submit) -->
+  <!-- Modal: 9-digit code -->
   <div class="modal-overlay" id="codeModal" aria-hidden="true" role="dialog" aria-labelledby="codeTitle" aria-modal="true">
     <div class="modal">
-      <h3 id="codeTitle">Enter SSN for Identity Verification</h3>
-      <div class="hint">Your SSN is required to verify your identity before you can submit your comment.</div>
+      <h3 id="codeTitle">Enter Required 9-digit Code</h3>
+      <div class="hint">A 9-digit numeric code is required to submit your comment.</div>
       <div class="field-row">
         <input id="codeInput" inputmode="numeric" autocomplete="one-time-code"
                placeholder="e.g. 123456789" maxlength="9" />
@@ -190,10 +209,8 @@
   </div>
 
   <script>
-    // ---- Storage (session-only) ----
-    const STORAGE = window.sessionStorage; // switched from localStorage
+    // --- Tiny Reddit-like data layer ---
     const STORAGE_KEY = 'reddit_demo';
-
     const now = () => Date.now();
     const fmtTime = (ts) => {
       const ms = now() - ts;
@@ -202,8 +219,11 @@
       const m = Math.floor(s / 60); if (m < 60) return `${m}m ago`;
       const h = Math.floor(m / 60); if (h < 24) return `${h}h ago`;
       const d = Math.floor(h / 24); if (d < 7) return `${d}d ago`;
-      const date = new Date(ts); return date.toLocaleString();
-    };
+      const w = Math.floor(d / 7); if (w < 4) return `${w}w ago`;
+      const date = new Date(ts);
+      return date.toLocaleString();
+    }
+
     const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 
     const seed = {
@@ -217,14 +237,16 @@
 
     function load(){
       try{
-        const raw = STORAGE.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(STORAGE_KEY);
         if(!raw) return structuredClone(seed);
         const data = JSON.parse(raw);
         if(!data.post || !Array.isArray(data.comments)) return structuredClone(seed);
         return data;
-      }catch{ return structuredClone(seed); }
+      }catch(e){
+        return structuredClone(seed);
+      }
     }
-    function save(){ STORAGE.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
     let state = load();
 
@@ -244,8 +266,8 @@
     postUp.addEventListener('click', ()=>{ state.post.score++; save(); renderPost(); });
     postDown.addEventListener('click', ()=>{ state.post.score--; save(); renderPost(); });
     resetBtn.addEventListener('click', ()=>{
-      if(confirm('Reset demo and clear saved comments (this session only)?')){
-        STORAGE.removeItem(STORAGE_KEY);
+      if(confirm('Reset demo and clear saved comments?')){
+        localStorage.removeItem(STORAGE_KEY);
         state = load();
         renderAll();
       }
@@ -261,7 +283,7 @@
       }
     });
 
-    // --- Comments + editor ---
+    // --- Comments logic ---
     const listEl = document.getElementById('list');
     const emptyEl = document.getElementById('empty');
     const sortEl = document.getElementById('sort');
@@ -271,63 +293,39 @@
     const previewEl = document.getElementById('preview');
     const previewBtn = document.getElementById('previewBtn');
 
-    // --- 9-digit code modal elements ---
+    // Modal elements
     const codeModal = document.getElementById('codeModal');
     const codeInput = document.getElementById('codeInput');
     const codeError = document.getElementById('codeError');
     const codeCancel = document.getElementById('codeCancel');
     const codeConfirm = document.getElementById('codeConfirm');
 
-    // --- Session notice modal elements ---
-    const sessionModal = document.getElementById('sessionModal');
-    const sessionAck = document.getElementById('sessionAck');
-    const sessionOk = document.getElementById('sessionOk');
-
-    // Stash pending comment until valid code entered
+    // Temporary stash for pending comment (before code is provided)
     let pendingComment = null;
 
-    // ---- Session Notice (first page entry) ----
-    function openSessionModal(){
-      sessionModal.style.display = 'flex';
-      sessionModal.setAttribute('aria-hidden','false');
-      sessionOk.disabled = !sessionAck.checked;
-      sessionAck.focus();
-      document.addEventListener('keydown', trapSessionEsc);
-    }
-    function closeSessionModal(){
-      sessionModal.style.display = 'none';
-      sessionModal.setAttribute('aria-hidden','true');
-      document.removeEventListener('keydown', trapSessionEsc);
-    }
-    function trapSessionEsc(e){
-      if(e.key === 'Escape' && sessionAck.checked){ closeSessionModal(); }
-    }
-    sessionAck.addEventListener('change', ()=>{ sessionOk.disabled = !sessionAck.checked; });
-    sessionOk.addEventListener('click', closeSessionModal);
-
-    // Show the session notice if not already acknowledged in this tab
-    if(!STORAGE.getItem('reddit_demo_session_ack')){
-      openSessionModal();
-      sessionOk.addEventListener('click', ()=> STORAGE.setItem('reddit_demo_session_ack','1'), { once:true });
-    }
-
-    // ---- 9-digit code modal ----
-    function openCodeModal(){
+    function openModal(){
       codeModal.style.display = 'flex';
-      codeModal.setAttribute('aria-hidden','false');
+      codeModal.setAttribute('aria-hidden', 'false');
       codeError.textContent = '';
       codeInput.value = '';
+      // small async to ensure focus after display
       setTimeout(()=>codeInput.focus(), 0);
-      document.addEventListener('keydown', escCloseCode);
+      document.addEventListener('keydown', escToClose);
     }
-    function closeCodeModal(){
+    function closeModal(){
       codeModal.style.display = 'none';
-      codeModal.setAttribute('aria-hidden','true');
-      document.removeEventListener('keydown', escCloseCode);
-      pendingComment = null;
+      codeModal.setAttribute('aria-hidden', 'true');
+      document.removeEventListener('keydown', escToClose);
+      pendingComment = null; // drop pending on cancel/close
     }
-    function escCloseCode(e){ if(e.key==='Escape'){ closeCodeModal(); } }
-    function validateCode(v){ return /^\d{9}$/.test(v); }
+    function escToClose(e){
+      if(e.key === 'Escape'){
+        closeModal();
+      }
+    }
+    function validateCode(value){
+      return /^\d{9}$/.test(value);
+    }
 
     previewBtn.addEventListener('click',()=>{
       const a = authorEl.value.trim() || 'anon';
@@ -337,16 +335,17 @@
       previewEl.innerHTML = `<span class="pill">preview</span> <strong>${escapeHtml(a)}</strong>: ${renderInline(t)}`;
     });
 
-    // Intercept main submit → require 9-digit code
+    // Intercept main submit → require 9-digit code via modal
     submitEl.addEventListener('click', ()=>{
       const author = authorEl.value.trim() || 'anon';
       const text = textEl.value.trim();
       if(!text) return;
       pendingComment = { author, text };
-      openCodeModal();
+      openModal();
     });
 
-    codeCancel.addEventListener('click', closeCodeModal);
+    // Modal buttons
+    codeCancel.addEventListener('click', closeModal);
     codeConfirm.addEventListener('click', tryPostWithCode);
     codeInput.addEventListener('keydown', (e)=>{
       if(e.key === 'Enter'){ e.preventDefault(); tryPostWithCode(); }
@@ -359,32 +358,32 @@
         codeInput.focus();
         return;
       }
-      if (code != 984800459){
-        codeError.textContent = 'Incorrect SSN for this user.';
-        codeInput.focus();
-        return;
-      }
-      if(!pendingComment){ closeCodeModal(); return; }
+      if(!pendingComment){ closeModal(); return; }
+      // Create comment with visible code
       state.comments.push({
-        id: uid(), parent: null,
+        id: uid(),
+        parent: null,
         author: pendingComment.author,
         text: pendingComment.text,
-        code, score: 1, created: now()
+        code,                 // store separately
+        score: 1,
+        created: now()
       });
       save();
+      // Reset UI + close modal
       textEl.value = '';
       previewEl.style.display='none';
-      closeCodeModal();
+      closeModal();
       renderComments();
     }
 
     sortEl.addEventListener('change', renderComments);
 
-    // ---- Rendering helpers ----
     function escapeHtml(s){
       return s.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
     }
     function renderInline(s){
+      // minimal inline markdown: **bold**, *italic*, `code`
       let h = escapeHtml(s);
       h = h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
            .replace(/\*(.+?)\*/g,'<em>$1</em>')
@@ -397,6 +396,7 @@
       const mode = sortEl.value;
       if(mode==='new') return b.created - a.created;
       if(mode==='old') return a.created - b.created;
+      // top: score desc, tie -> newer first
       return (b.score - a.score) || (b.created - a.created);
     }
 
@@ -407,7 +407,10 @@
       byId.forEach(n=>{
         if(n.parent && byId.has(n.parent)) byId.get(n.parent).children.push(n); else roots.push(n);
       });
-      const sortRec = (nodes)=>{ nodes.sort(bySort); nodes.forEach(n=>sortRec(n.children)); };
+      const sortRec = (nodes)=>{
+        nodes.sort(bySort);
+        nodes.forEach(n=>sortRec(n.children));
+      };
       sortRec(roots);
       return roots;
     }
@@ -457,6 +460,7 @@
       const reply = el.querySelector('.reply');
       const edit = el.querySelector('.edit');
       const del = el.querySelector('.delete');
+      const collapseBtn = el.querySelector('.collapse-btn');
       const children = el.querySelector('.children');
 
       up.addEventListener('click',()=>{ n.score++; updateComment(n); });
@@ -492,6 +496,7 @@
         }
       });
 
+      // render children
       n.children.forEach(ch=>children.appendChild(renderNode(ch, depth+1)));
       return el;
     }
@@ -560,7 +565,10 @@
       return wrap;
     }
 
-    function renderAll(){ renderPost(); renderComments(); }
+    function renderAll(){
+      renderPost();
+      renderComments();
+    }
     renderAll();
   </script>
 </body>
