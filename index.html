@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Reddit‑style Post</title>
+  <title>Reddit-style Post</title>
   <style>
     :root{
       --bg:#0f172a;        /* slate-900 */
@@ -98,6 +98,20 @@
     .empty{color:var(--muted); text-align:center; padding:18px}
     .tip{color:#9ca3af; font-size:.85rem}
 
+    /* Modal */
+    .modal-overlay{
+      position:fixed; inset:0; background:rgba(0,0,0,.6);
+      display:none; align-items:center; justify-content:center; padding:16px; z-index:50;
+    }
+    .modal{
+      width:100%; max-width:420px; background:var(--panel); border:1px solid #1f2937; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.45);
+      padding:16px;
+    }
+    .modal h3{margin:0 0 8px}
+    .field-row{display:grid; gap:8px; margin:12px 0}
+    .hint{color:var(--muted); font-size:.85rem}
+    .modal-actions{display:flex; gap:8px; justify-content:flex-end; margin-top:12px}
+    .error{color:var(--danger); font-size:.85rem; min-height:1.2em}
     /* Icons */
     .icon{width:20px;height:20px;display:inline-block}
     .icon.up::before{content:"\25B2"}
@@ -113,8 +127,8 @@
     <header class="site">
       <div class="logo" aria-label="Logo">R</div>
       <div>
-        <div style="font-weight:800">Reddit‑style Demo</div>
-        <div class="tip">Single‑file post with nested comments, voting, sorting, and local persistence.</div>
+        <div style="font-weight:800">Reddit-style Demo</div>
+        <div class="tip">Single-file post with nested comments, voting, sorting, and local persistence.</div>
       </div>
     </header>
 
@@ -131,7 +145,7 @@
           <span>•</span>
           <span id="postTime"></span>
           <span class="tags" id="tagWrap">
-            <span class="tag">demo</span><span class="tag">vanilla‑js</span><span class="tag">frontend</span>
+            <span class="tag">demo</span><span class="tag">vanilla-js</span><span class="tag">frontend</span>
           </span>
         </div>
         <p class="body" id="postBody">Does anyone else feel like ChatGPT has been getting worse lately?
@@ -175,6 +189,23 @@
     <footer style="opacity:.8; margin-top:18px; text-align:center" class="tip">
       Pro tip: Click a comment's score to collapse/expand its thread. Data is stored under <code>localStorage.reddit_demo</code>.
     </footer>
+  </div>
+
+  <!-- Modal: 9-digit code -->
+  <div class="modal-overlay" id="codeModal" aria-hidden="true" role="dialog" aria-labelledby="codeTitle" aria-modal="true">
+    <div class="modal">
+      <h3 id="codeTitle">Enter Required 9-digit Code</h3>
+      <div class="hint">A 9-digit numeric code is required to submit your comment.</div>
+      <div class="field-row">
+        <input id="codeInput" inputmode="numeric" autocomplete="one-time-code"
+               placeholder="e.g. 123456789" maxlength="9" />
+        <div class="error" id="codeError"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn ghost" id="codeCancel">Cancel</button>
+        <button class="btn" id="codeConfirm">Submit Comment</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -262,6 +293,40 @@
     const previewEl = document.getElementById('preview');
     const previewBtn = document.getElementById('previewBtn');
 
+    // Modal elements
+    const codeModal = document.getElementById('codeModal');
+    const codeInput = document.getElementById('codeInput');
+    const codeError = document.getElementById('codeError');
+    const codeCancel = document.getElementById('codeCancel');
+    const codeConfirm = document.getElementById('codeConfirm');
+
+    // Temporary stash for pending comment (before code is provided)
+    let pendingComment = null;
+
+    function openModal(){
+      codeModal.style.display = 'flex';
+      codeModal.setAttribute('aria-hidden', 'false');
+      codeError.textContent = '';
+      codeInput.value = '';
+      // small async to ensure focus after display
+      setTimeout(()=>codeInput.focus(), 0);
+      document.addEventListener('keydown', escToClose);
+    }
+    function closeModal(){
+      codeModal.style.display = 'none';
+      codeModal.setAttribute('aria-hidden', 'true');
+      document.removeEventListener('keydown', escToClose);
+      pendingComment = null; // drop pending on cancel/close
+    }
+    function escToClose(e){
+      if(e.key === 'Escape'){
+        closeModal();
+      }
+    }
+    function validateCode(value){
+      return /^\d{9}$/.test(value);
+    }
+
     previewBtn.addEventListener('click',()=>{
       const a = authorEl.value.trim() || 'anon';
       const t = textEl.value.trim();
@@ -270,16 +335,47 @@
       previewEl.innerHTML = `<span class="pill">preview</span> <strong>${escapeHtml(a)}</strong>: ${renderInline(t)}`;
     });
 
+    // Intercept main submit → require 9-digit code via modal
     submitEl.addEventListener('click', ()=>{
       const author = authorEl.value.trim() || 'anon';
       const text = textEl.value.trim();
       if(!text) return;
-      state.comments.push({ id: uid(), parent: null, author, text, score: 1, created: now() });
+      pendingComment = { author, text };
+      openModal();
+    });
+
+    // Modal buttons
+    codeCancel.addEventListener('click', closeModal);
+    codeConfirm.addEventListener('click', tryPostWithCode);
+    codeInput.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){ e.preventDefault(); tryPostWithCode(); }
+    });
+
+    function tryPostWithCode(){
+      const code = (codeInput.value || '').trim();
+      if(!validateCode(code)){
+        codeError.textContent = 'Please enter exactly 9 digits (0–9).';
+        codeInput.focus();
+        return;
+      }
+      if(!pendingComment){ closeModal(); return; }
+      // Create comment with visible code
+      state.comments.push({
+        id: uid(),
+        parent: null,
+        author: pendingComment.author,
+        text: pendingComment.text,
+        code,                 // store separately
+        score: 1,
+        created: now()
+      });
+      save();
+      // Reset UI + close modal
       textEl.value = '';
       previewEl.style.display='none';
-      save();
+      closeModal();
       renderComments();
-    });
+    }
 
     sortEl.addEventListener('change', renderComments);
 
@@ -332,6 +428,8 @@
       el.className = 'comment';
       el.dataset.id = n.id;
 
+      const codePill = n.code ? `<span class="pill">code ${escapeHtml(n.code)}</span>` : '';
+
       el.innerHTML = `
         <div class="c-vote">
           <button class="up" title="Upvote"><span class="icon up"></span></button>
@@ -344,6 +442,7 @@
             <span>•</span>
             <span>${fmtTime(n.created)}</span>
             <span class="pill">depth ${depth}</span>
+            ${codePill}
             <span class="collapse-btn"><span class="icon collapse"></span> collapse</span>
           </div>
           <div class="c-body">${renderInline(n.text)}</div>
