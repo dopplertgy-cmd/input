@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reddit-style Post</title>
+  <style>
+    :root{
+      --bg:#0f172a;        /* slate-900 */
+      --panel:#111827;     /* gray-900 */
+      --soft:#1f2937;      /* gray-800 */
+      --text:#e5e7eb;      /* gray-200 */
+      --muted:#94a3b8;     /* slate-400 */
+      --brand:#ff4500;     /* reddit-ish */
+      --accent:#22c55e;    /* green-500 */
+      --danger:#ef4444;    /* red-500 */
+      --link:#60a5fa;      /* blue-400 */
+      --chip:#0b1223;      
+      --radius:16px;
+      --gap:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+      background:linear-gradient(180deg, #0b1223, var(--bg));
+      color:var(--text);
+    }
+    .container{max-width:980px;margin:28px auto;padding:0 16px}
+    .card{
+      background:linear-gradient(180deg, var(--panel), #0b1223);
+      border:1px solid #1f2937; border-radius:var(--radius);
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+    header.site{
+      display:flex; align-items:center; gap:12px; margin-bottom:18px;
+    }
+    .logo{width:34px;height:34px;border-radius:8px;background:var(--brand);display:grid;place-items:center;font-weight:800}
+    .post{
+      display:grid; grid-template-columns:64px 1fr; gap:0; 
+    }
+    .vote{
+      background:var(--chip); padding:16px 10px; display:flex; flex-direction:column; align-items:center; gap:8px; 
+      border-right:1px solid #1f2937;
+    }
+    .vote button{all:unset; cursor:pointer; padding:6px; line-height:0; border-radius:10px}
+    .vote button:hover{background:#182035}
+    .vote .count{font-weight:700}
+
+    .content{padding:20px}
+    .title{font-size:1.35rem; font-weight:800; margin:0 0 6px}
+    .meta{color:var(--muted); font-size:.92rem; display:flex; gap:10px; flex-wrap:wrap}
+    .body{margin:14px 0 6px; white-space:pre-wrap}
+    .tags{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0}
+    .tag{background:#12203d; color:#bcd0ff; padding:4px 10px; border-radius:999px; font-size:.82rem; border:1px solid #1f2b4d}
+
+    .post-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+    .chip{background:var(--chip); border:1px solid #1f2937; padding:8px 12px; border-radius:999px; color:var(--muted); cursor:pointer}
+    .chip:hover{border-color:#334155;color:#cbd5e1}
+
+    .comments{padding:20px; border-top:1px solid #1f2937}
+    .comments header{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .sort{background:#0b1223;border:1px solid #1f2937;color:var(--text);padding:8px 10px;border-radius:12px}
+
+    .editor{display:grid; gap:10px; margin-top:14px}
+    textarea, input[type="text"]{
+      width:100%; background:#0b1223; color:var(--text); border:1px solid #1f2937; border-radius:12px; padding:10px 12px; font:inherit
+    }
+    textarea{min-height:84px; resize:vertical}
+    .btn{
+      background:linear-gradient(180deg,#1d4ed8,#1e40af); color:white; border:none; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer
+    }
+    .btn.ghost{background:transparent;color:var(--muted);border:1px dashed #374151}
+    .btn.danger{background:linear-gradient(180deg,#dc2626,#b91c1c)}
+    .btn:disabled{opacity:.6; cursor:not-allowed}
+
+    .list{margin-top:18px}
+    .comment{
+      display:grid; grid-template-columns:48px 1fr; gap:12px; padding:12px; border:1px solid #1f2937; border-radius:12px; background:#0b1223;
+      margin-top:12px;
+    }
+    .c-vote{display:flex; flex-direction:column; align-items:center; gap:6px}
+    .c-vote button{all:unset;cursor:pointer;padding:6px;border-radius:8px}
+    .c-vote button:hover{background:#182035}
+    .c-vote .count{font-weight:700;font-size:.95rem}
+
+    .c-body{white-space:pre-wrap}
+    .c-head{display:flex; gap:8px; align-items:center; color:var(--muted); font-size:.9rem}
+    .c-actions{display:flex; gap:8px; margin-top:8px}
+    .link{color:var(--link); text-decoration:none}
+    .link:hover{text-decoration:underline}
+    .children{margin-left:32px}
+    .collapsed>.children{display:none}
+    .collapse-btn{cursor:pointer;color:var(--muted);font-size:.85rem}
+    .pill{background:#0b1326;border:1px solid #142443;color:#a8c1ff;border-radius:999px;padding:2px 8px;font-size:.75rem}
+
+    .empty{color:var(--muted); text-align:center; padding:18px}
+    .tip{color:#9ca3af; font-size:.85rem}
+
+    /* Icons */
+    .icon{width:20px;height:20px;display:inline-block}
+    .icon.up::before{content:"\25B2"}
+    .icon.down::before{content:"\25BC"}
+    .icon.reply::before{content:"\21A9"}
+    .icon.edit::before{content:"✎"}
+    .icon.delete::before{content:"✖"}
+    .icon.collapse::before{content:"\25BE"}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="site">
+      <div class="logo" aria-label="Logo">R</div>
+      <div>
+        <div style="font-weight:800">Reddit-style Demo</div>
+        <div class="tip">Single-file post with nested comments, voting, sorting, and local persistence.</div>
+      </div>
+    </header>
+
+    <article class="card post" id="post">
+      <aside class="vote" aria-label="Post voting">
+        <button id="postUp" title="Upvote"><span class="icon up"></span></button>
+        <div class="count" id="postScore">0</div>
+        <button id="postDown" title="Downvote"><span class="icon down"></span></button>
+      </aside>
+      <div class="content">
+        <h1 class="title" id="postTitle">ChatGPT enshittification begins :/</h1>
+        <div class="meta">
+          <span id="postAuthor">by <strong>demo_user</strong></span>
+          <span>•</span>
+          <span id="postTime"></span>
+          <span class="tags" id="tagWrap">
+            <span class="tag">demo</span><span class="tag">vanilla-js</span><span class="tag">frontend</span>
+          </span>
+        </div>
+        <p class="body" id="postBody">Does anyone else feel like ChatGPT has been getting worse lately?
+        </p>
+        <div class="post-actions">
+          <button class="chip" id="shareBtn">Share Link</button>
+          <button class="chip" id="resetBtn" title="Clear saved data">Reset Demo</button>
+        </div>
+      </div>
+    </article>
+
+    <section class="card comments" aria-label="Comments">
+      <header>
+        <h2 style="margin:0">Comments</h2>
+        <div style="display:flex; gap:8px; align-items:center">
+          <label for="sort" class="tip">Sort</label>
+          <select class="sort" id="sort">
+            <option value="top">Top</option>
+            <option value="new">New</option>
+            <option value="old">Old</option>
+          </select>
+        </div>
+      </header>
+
+      <div class="editor" aria-label="New comment editor">
+        <input type="text" id="author" placeholder="Your name (required)" />
+        <input type="text" id="email" placeholder="Your email (required)" />
+        <textarea id="text" placeholder="What are your thoughts?"></textarea>
+        <div style="display:flex; gap:8px; justify-content:flex-end">
+          <button class="btn ghost" id="previewBtn">Preview</button>
+          <button class="btn" id="submitBtn">Comment</button>
+        </div>
+        <div id="preview" class="tip" style="display:none"></div>
+      </div>
+
+      <div class="list" id="list">
+        <div class="empty" id="empty">Be the first to comment.</div>
+      </div>
+    </section>
+
+    <footer style="opacity:.8; margin-top:18px; text-align:center" class="tip">
+      Pro tip: Click a comment's score to collapse/expand its thread. Data is stored under <code>localStorage.reddit_demo</code>.
+    </footer>
+  </div>
+
+  <script>
+    // --- Tiny Reddit-like data layer ---
+    const STORAGE_KEY = 'reddit_demo';
+    const now = () => Date.now();
+    const fmtTime = (ts) => {
+      const ms = now() - ts;
+      const s = Math.floor(ms / 1000);
+      if (s < 60) return `${s}s ago`;
+      const m = Math.floor(s / 60); if (m < 60) return `${m}m ago`;
+      const h = Math.floor(m / 60); if (h < 24) return `${h}h ago`;
+      const d = Math.floor(h / 24); if (d < 7) return `${d}d ago`;
+      const w = Math.floor(d / 7); if (w < 4) return `${w}w ago`;
+      const date = new Date(ts);
+      return date.toLocaleString();
+    }
+
+    const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+    const seed = {
+      post: { id: 'post-1', score: 1, created: now()-3600_000, title: 'ChatGPT enshittification begins :/', author: 'demo_user', body: `Does anyone else feel like ChatGPT has been getting worse lately?` },
+      comments: [
+        { id: uid(), parent: null, author: 'alice', text: 'Love the minimalism!', score: 5, created: now()-1800_000 },
+        { id: uid(), parent: null, author: 'bob', text: 'Could use markdown support.', score: 2, created: now()-1200_000 },
+        { id: uid(), parent: null, author: 'charlie', text: 'How do you persist data?', score: 1, created: now()-900_000 },
+      ]
+    };
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return structuredClone(seed);
+        const data = JSON.parse(raw);
+        if(!data.post || !Array.isArray(data.comments)) return structuredClone(seed);
+        return data;
+      }catch(e){
+        return structuredClone(seed);
+      }
+    }
+    function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+    let state = load();
+
+    // --- Post wiring ---
+    const postScore = document.getElementById('postScore');
+    const postUp = document.getElementById('postUp');
+    const postDown = document.getElementById('postDown');
+    const postTime = document.getElementById('postTime');
+    const resetBtn = document.getElementById('resetBtn');
+    const shareBtn = document.getElementById('shareBtn');
+
+    function renderPost(){
+      postScore.textContent = state.post.score;
+      postTime.textContent = fmtTime(state.post.created);
+    }
+
+    postUp.addEventListener('click', ()=>{ state.post.score++; save(); renderPost(); });
+    postDown.addEventListener('click', ()=>{ state.post.score--; save(); renderPost(); });
+    resetBtn.addEventListener('click', ()=>{
+      if(confirm('Reset demo and clear saved comments?')){
+        localStorage.removeItem(STORAGE_KEY);
+        state = load();
+        renderAll();
+      }
+    });
+    shareBtn.addEventListener('click', async ()=>{
+      const url = location.href;
+      try{
+        await navigator.clipboard.writeText(url);
+        shareBtn.textContent = 'Link copied!';
+        setTimeout(()=>shareBtn.textContent='Share Link', 1500);
+      }catch(e){
+        alert('Copy failed. URL: '+url);
+      }
+    });
+
+    // --- Comments logic ---
+    const listEl = document.getElementById('list');
+    const emptyEl = document.getElementById('empty');
+    const sortEl = document.getElementById('sort');
+    const authorEl = document.getElementById('author');
+    const textEl = document.getElementById('text');
+    const submitEl = document.getElementById('submitBtn');
+    const previewEl = document.getElementById('preview');
+    const previewBtn = document.getElementById('previewBtn');
+
+    previewBtn.addEventListener('click', ()=>{
+      const a = authorEl.value.trim() || 'anon';
+      const t = textEl.value.trim();
+      if(!t){ previewEl.style.display='none'; return; }
+      previewEl.style.display='block';
+      previewEl.innerHTML = `<span class="pill">preview</span> <strong>${escapeHtml(a)}</strong>: ${renderInline(t)}`;
+    });
+
+    // Submit comment directly (no verification)
+    submitEl.addEventListener('click', ()=>{
+      const author = authorEl.value.trim() || 'anon';
+      const text = textEl.value.trim();
+      if(!text) return;
+      state.comments.push({
+        id: uid(),
+        parent: null,
+        author,
+        text,
+        score: 1,
+        created: now()
+      });
+      save();
+      textEl.value = '';
+      previewEl.style.display='none';
+      renderComments();
+    });
+
+    sortEl.addEventListener('change', renderComments);
+
+    function escapeHtml(s){
+      return s.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+    }
+    function renderInline(s){
+      // minimal inline markdown: **bold**, *italic*, `code`
+      let h = escapeHtml(s);
+      h = h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+           .replace(/\*(.+?)\*/g,'<em>$1</em>')
+           .replace(/`([^`]+)`/g,'<code>$1</code>')
+           .replace(/(https?:\/\/\S+)/g,'<a class="link" href="$1" target="_blank" rel="noopener">$1</a>');
+      return h;
+    }
+
+    function bySort(a,b){
+      const mode = sortEl.value;
+      if(mode==='new') return b.created - a.created;
+      if(mode==='old') return a.created - b.created;
+      // top: score desc, tie -> newer first
+      return (b.score - a.score) || (b.created - a.created);
+    }
+
+    function tree(){
+      const byId = new Map();
+      state.comments.forEach(c=>byId.set(c.id,{...c, children:[]}));
+      const roots = [];
+      byId.forEach(n=>{
+        if(n.parent && byId.has(n.parent)) byId.get(n.parent).children.push(n); else roots.push(n);
+      });
+      const sortRec = (nodes)=>{
+        nodes.sort(bySort);
+        nodes.forEach(n=>sortRec(n.children));
+      };
+      sortRec(roots);
+      return roots;
+    }
+
+    function renderComments(){
+      const roots = tree();
+      listEl.innerHTML = '';
+      if(!roots.length){ emptyEl.style.display='block'; return; }
+      emptyEl.style.display='none';
+      roots.forEach(n=>listEl.appendChild(renderNode(n, 0)));
+    }
+
+    function renderNode(n, depth){
+      const el = document.createElement('div');
+      el.className = 'comment';
+      el.dataset.id = n.id;
+
+      el.innerHTML = `
+        <div class="c-vote">
+          <button class="up" title="Upvote"><span class="icon up"></span></button>
+          <div class="count" role="button" title="Collapse/expand" tabindex="0">${n.score}</div>
+          <button class="down" title="Downvote"><span class="icon down"></span></button>
+        </div>
+        <div>
+          <div class="c-head">
+            <strong>${escapeHtml(n.author||'anon')}</strong>
+            <span>•</span>
+            <span>${fmtTime(n.created)}</span>
+            <span class="pill">depth ${depth}</span>
+            <span class="collapse-btn"><span class="icon collapse"></span> collapse</span>
+          </div>
+          <div class="c-body">${renderInline(n.text)}</div>
+          <div class="c-actions">
+            <a href="#" class="link reply"><span class="icon reply"></span> Reply</a>
+            <a href="#" class="link edit"><span class="icon edit"></span> Edit</a>
+            <a href="#" class="link delete" style="color:var(--danger)"><span class="icon delete"></span> Delete</a>
+          </div>
+          <div class="children"></div>
+        </div>`;
+
+      const up = el.querySelector('.up');
+      const down = el.querySelector('.down');
+      const count = el.querySelector('.count');
+      const reply = el.querySelector('.reply');
+      const edit = el.querySelector('.edit');
+      const del = el.querySelector('.delete');
+      const children = el.querySelector('.children');
+
+      up.addEventListener('click',()=>{ n.score++; updateComment(n); });
+      down.addEventListener('click',()=>{ n.score--; updateComment(n); });
+      count.addEventListener('click',()=>{ el.classList.toggle('collapsed'); });
+      count.addEventListener('keydown',(e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); el.classList.toggle('collapsed'); } });
+
+      reply.addEventListener('click', (e)=>{
+        e.preventDefault();
+        if(depth>=6){ alert('Max nesting reached.'); return; }
+        const form = replyForm((author, text)=>{
+          state.comments.push({ id: uid(), parent: n.id, author, text, score: 1, created: now() });
+          save();
+          renderComments();
+        });
+        children.prepend(form);
+      });
+
+      edit.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const form = editForm(n, (newText)=>{
+          n.text = newText; updateComment(n);
+        });
+        children.prepend(form);
+      });
+
+      del.addEventListener('click', (e)=>{
+        e.preventDefault();
+        if(confirm('Delete this comment and its replies?')){
+          deleteCascade(n.id);
+          save();
+          renderComments();
+        }
+      });
+
+      // render children
+      n.children.forEach(ch=>children.appendChild(renderNode(ch, depth+1)));
+      return el;
+    }
+
+    function updateComment(n){
+      const idx = state.comments.findIndex(c=>c.id===n.id);
+      if(idx>-1){ state.comments[idx] = {...state.comments[idx], ...n}; save(); renderComments(); }
+    }
+
+    function deleteCascade(id){
+      const ids = new Set([id]);
+      let changed = true;
+      while(changed){
+        changed = false;
+        for(const c of state.comments){
+          if(c.parent && ids.has(c.parent) && !ids.has(c.id)) { ids.add(c.id); changed=true; }
+        }
+      }
+      state.comments = state.comments.filter(c=>!ids.has(c.id));
+    }
+
+    function replyForm(onSubmit){
+      const wrap = document.createElement('div');
+      wrap.className = 'editor';
+      wrap.style.marginTop = '10px';
+      wrap.innerHTML = `
+        <input placeholder="Your name (required)" />
+        <input placeholder="Your email (required)" />
+        <textarea placeholder="Write a reply..."></textarea>
+        <div style="display:flex; gap:8px; justify-content:flex-end">
+          <button class="btn ghost">Cancel</button>
+          <button class="btn">Reply</button>
+        </div>`;
+      const [name, email, area] = wrap.querySelectorAll('input,textarea'); // email unused; kept for UI parity
+      const [cancel, submit] = wrap.querySelectorAll('button');
+      cancel.addEventListener('click', ()=> wrap.remove());
+      submit.addEventListener('click', ()=>{
+        const author = name.value.trim() || 'anon';
+        const text = area.value.trim();
+        if(!text) return;
+        onSubmit(author, text);
+        wrap.remove();
+      });
+      return wrap;
+    }
+
+    function editForm(node, onSubmit){
+      const wrap = document.createElement('div');
+      wrap.className = 'editor';
+      wrap.style.marginTop = '10px';
+      wrap.innerHTML = `
+        <textarea>${node.text.replace(/</g,'&lt;')}</textarea>
+        <div style="display:flex; gap:8px; justify-content:flex-end">
+          <button class="btn ghost">Cancel</button>
+          <button class="btn">Save</button>
+        </div>`;
+      const area = wrap.querySelector('textarea');
+      const [cancel, submit] = wrap.querySelectorAll('button');
+      cancel.addEventListener('click', ()=> wrap.remove());
+      submit.addEventListener('click', ()=>{
+        const text = area.value.trim();
+        if(!text) return;
+        onSubmit(text);
+        wrap.remove();
+      });
+      return wrap;
+    }
+
+    function renderAll(){
+      renderPost();
+      renderComments();
+    }
+    renderAll();
+  </script>
+</body>
+</html>
