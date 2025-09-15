@@ -137,10 +137,7 @@
         <strong>collected</strong>, <strong>shared</strong>, or <strong>stored to any external sources</strong>.
         Your inputs are kept local to your device/session.
       </p>
-      <div class="row">
-        <input type="checkbox" id="dontShow" checked />
-        <label for="dontShow">Don’t show this again on this device</label>
-      </div>
+    
       <div class="actions">
         <button class="btn" id="simAcknowledge" autofocus aria-label="Close notice and continue">I Understand</button>
       </div>
@@ -522,7 +519,6 @@
       const KEY = 'sim_notice_ack';
       const modal = document.getElementById('simModal');
       const ackBtn = document.getElementById('simAcknowledge');
-      const dontShow = document.getElementById('dontShow');
 
       function openModal(){
         modal.setAttribute('aria-hidden','false');
@@ -546,9 +542,7 @@
       }
 
       ackBtn.addEventListener('click', ()=>{
-        if(dontShow.checked){
-          try{ localStorage.setItem(KEY, JSON.stringify({ at: Date.now() })); }catch(e){}
-        }
+       
         closeModal();
       });
 
