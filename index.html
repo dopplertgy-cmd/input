@@ -106,10 +106,48 @@
     .icon.edit::before{content:"✎"}
     .icon.delete::before{content:"✖"}
     .icon.collapse::before{content:"\25BE"}
+
+    /* --- Simulation Notice Modal --- */
+    .modal-backdrop{
+      position:fixed; inset:0; background:rgba(0,0,0,.6);
+      display:none; align-items:center; justify-content:center; z-index:9999;
+    }
+    .modal-backdrop[aria-hidden="false"]{display:flex;}
+    .modal{
+      width:min(640px, 92vw);
+      background:linear-gradient(180deg, var(--panel), #0b1223);
+      border:1px solid #1f2937; border-radius:24px; padding:20px;
+      box-shadow:0 20px 60px rgba(0,0,0,.45);
+    }
+    .modal h2{margin:0 0 6px; font-size:1.25rem}
+    .modal p{margin:8px 0; color:#cbd5e1}
+    .modal .row{display:flex; gap:10px; align-items:center; margin-top:10px}
+    .modal .actions{display:flex; gap:10px; justify-content:flex-end; margin-top:14px}
+    .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+    .no-scroll{overflow:hidden;}
   </style>
 </head>
 <body>
-  <div class="container">
+  <!-- Simulation Notice Modal -->
+  <div class="modal-backdrop" id="simModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="simTitle" aria-describedby="simDesc">
+    <div class="modal" role="document">
+      <h2 id="simTitle">Secure Simulation Notice</h2>
+      <p id="simDesc">
+        This site is a <strong>secure simulation</strong>. No data you enter here will be
+        <strong>collected</strong>, <strong>shared</strong>, or <strong>stored to any external sources</strong>.
+        Your inputs are kept local to your device/session.
+      </p>
+      <div class="row">
+        <input type="checkbox" id="dontShow" checked />
+        <label for="dontShow">Don’t show this again on this device</label>
+      </div>
+      <div class="actions">
+        <button class="btn" id="simAcknowledge" autofocus aria-label="Close notice and continue">I Understand</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" aria-hidden="false">
     <header class="site">
       <div class="logo" aria-label="Logo">R</div>
       <div>
@@ -478,6 +516,53 @@
       renderComments();
     }
     renderAll();
+
+    // --- Simulation Notice Control ---
+    (function simulationNotice(){
+      const KEY = 'sim_notice_ack';
+      const modal = document.getElementById('simModal');
+      const ackBtn = document.getElementById('simAcknowledge');
+      const dontShow = document.getElementById('dontShow');
+
+      function openModal(){
+        modal.setAttribute('aria-hidden','false');
+        document.body.classList.add('no-scroll');
+        // Focus trap basics
+        const focusable = modal.querySelectorAll('button, [href], input, textarea, [tabindex]:not([tabindex="-1"])');
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        modal.addEventListener('keydown', (e)=>{
+          if(e.key === 'Escape'){ closeModal(); }
+          if(e.key === 'Tab'){
+            if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+            else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+          }
+        });
+        ackBtn.focus();
+      }
+
+      function closeModal(){
+        modal.setAttribute('aria-hidden','true');
+        document.body.classList.remove('no-scroll');
+      }
+
+      ackBtn.addEventListener('click', ()=>{
+        if(dontShow.checked){
+          try{ localStorage.setItem(KEY, JSON.stringify({ at: Date.now() })); }catch(e){}
+        }
+        closeModal();
+      });
+
+      // Only show if not acknowledged
+      let acknowledged = false;
+      try{
+        acknowledged = !!localStorage.getItem(KEY);
+      }catch(e){ acknowledged = false; }
+
+      if(!acknowledged){
+        // Defer to ensure DOM is ready
+        setTimeout(openModal, 0);
+      }
+    })();
   </script>
 </body>
 </html>
